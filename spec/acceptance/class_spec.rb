@@ -1,7 +1,7 @@
 require 'spec_helper_acceptance'
 apache_hash = apache_settings_hash
 describe 'apache class' do
-  context 'default parameters' do
+  context 'default parameters' , :integration do
     let(:pp) { "class { 'apache': }" }
 
     it 'behaves idempotently' do

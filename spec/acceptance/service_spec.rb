@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-describe 'apache::service class' do
+describe 'apache::service class' , :integration do
   describe 'adding dependencies in between the base class and service class' do
     let(:pp) do
       <<-MANIFEST
