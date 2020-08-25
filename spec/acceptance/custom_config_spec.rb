@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 apache_hash = apache_settings_hash
-describe 'apache::custom_config define' do
+describe 'apache::custom_config define' , :integration do
   context 'invalid config' do
     pp = <<-MANIFEST
         class { 'apache': }

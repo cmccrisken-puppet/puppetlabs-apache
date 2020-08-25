@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 apache_hash = apache_settings_hash
-describe 'apache::vhost define' do
+describe 'apache::vhost define' , :integration do
   context 'no default vhosts' do
     pp = <<-MANIFEST
       class { 'apache':
