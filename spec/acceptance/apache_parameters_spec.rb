@@ -1,8 +1,8 @@
 require 'spec_helper_acceptance'
 apache_hash = apache_settings_hash
-describe 'apache parameters' , :integration do
+describe 'apache parameters' do
   # Currently this test only does something on FreeBSD.
-  describe 'default_confd_files => false' do
+  describe 'default_confd_files => false', :integration do
     it 'doesnt do anything' do
       pp = "class { 'apache': default_confd_files => false }"
       apply_manifest(pp, catch_failures: true)
@@ -51,7 +51,7 @@ describe 'apache parameters' , :integration do
       apply_manifest(pp, catch_failures: true)
     end
 
-    describe service(apache_hash['service_name']), skip: 'FM-8483', :integration do
+    describe service(apache_hash['service_name']), skip: 'FM-8483' do
       it { is_expected.to be_running }
       it { is_expected.to be_enabled }
     end
@@ -267,7 +267,7 @@ describe 'apache parameters' , :integration do
     end
   end
 
-  describe 'server_root' , :integration do
+  describe 'server_root', :integration do
     describe 'setup' do
       it 'applies cleanly' do
         pp = "class { 'apache': server_root => '/tmp/root', service_ensure => stopped }"
@@ -281,7 +281,7 @@ describe 'apache parameters' , :integration do
     end
   end
 
-  describe 'confd_dir' , :integration do
+  describe 'confd_dir', :integration do
     describe 'setup' do
       it 'applies cleanly' do
         pp = "class { 'apache': confd_dir => '/tmp/root', service_ensure => stopped, use_optional_includes => true }"
@@ -302,7 +302,7 @@ describe 'apache parameters' , :integration do
     end
   end
 
-  describe 'conf_template' , :integration do
+  describe 'conf_template', :integration do
     describe 'setup' do
       it 'applies cleanly' do
         pp = "class { 'apache': conf_template => 'another/test.conf.erb', service_ensure => stopped }"
@@ -318,7 +318,7 @@ describe 'apache parameters' , :integration do
     end
   end
 
-  describe 'servername' , :integration do
+  describe 'servername', :integration do
     describe 'setup' do
       it 'applies cleanly' do
         pp = "class { 'apache': servername => 'test.server', service_ensure => stopped }"
@@ -558,7 +558,7 @@ describe 'apache parameters' , :integration do
       apply_manifest(pp, catch_failures: true)
     end
 
-    describe file(apache_hash['conf_file']) , :integration do
+    describe file(apache_hash['conf_file']) do
       it { is_expected.to be_file }
       it { is_expected.to contain 'TraceEnable Off' }
     end

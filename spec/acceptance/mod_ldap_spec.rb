@@ -1,7 +1,7 @@
 require 'spec_helper_acceptance'
 apache_hash = apache_settings_hash
 
-describe 'apache::mod::ldap', if: mod_supported_on_platform?('apache::mod::ldap'), :integration do
+describe 'apache::mod::ldap', if: mod_supported_on_platform?('apache::mod::ldap'), :integration => true do
   context 'Default ldap module installation' do
     pp = <<-MANIFEST
         class { 'apache': }
