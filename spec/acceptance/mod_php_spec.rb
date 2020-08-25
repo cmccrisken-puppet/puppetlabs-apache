@@ -1,7 +1,7 @@
 require 'spec_helper_acceptance'
 apache_hash = apache_settings_hash
 
-describe 'apache::mod::php class', if: mod_supported_on_platform?('apache::mod::php'), :integration do
+describe 'apache::mod::php class', if: mod_supported_on_platform?('apache::mod::php'), :integration => true do
   context 'default php config' do
     pp = <<-MANIFEST
         class { 'apache':
