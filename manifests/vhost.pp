@@ -1717,6 +1717,12 @@
 #   client request exceeds that limit, the server will return an error response
 #   instead of servicing the request.
 #
+# @param $use_servername_for_filenames
+#   When set to true, default log / config file names will be derived from the sanitized
+#   value of the $servername parameter.
+#   When set to false (default), the existing behaviour of using the $name parameter
+#   will remain.
+
 define apache::vhost (
   Variant[Boolean,String] $docroot,
   $manage_docroot                                                                   = true,
@@ -1782,6 +1788,7 @@ define apache::vhost (
   $access_log_format                                                                = false,
   $access_log_env_var                                                               = false,
   Optional[Array] $access_logs                                                      = undef,
+  Optional[Boolean] $use_servername_for_filenames                                   = false,
   $aliases                                                                          = undef,
   Optional[Variant[Hash, Array[Variant[Array,Hash]]]] $directories                  = undef,
   Boolean $error_log                                                                = true,
@@ -2036,8 +2043,39 @@ define apache::vhost (
     $priority_real = '25-'
   }
 
-  ## Apache include does not always work with spaces in the filename
-  $filename = regsubst($name, ' ', '_', 'G')
+  # IAC-1186: A number of configuration and log file names are generated using the $name parameter. It is possile for
+  # the $name parameter to contain spaces, which could then be transferred to the log / config filenames. Although
+  # POSIX compliant, this can be cumbersome.
+  #
+  # It seems more appropriate to use the $servername parameter to derive default log / config filenames from. We should
+  # also perform some sanitiation on the $servername parameter to strip spaces from it, as it defaults to the value of
+  # $name, should $servername NOT be defined.
+  #
+  # We will retain the default behaviour for filenames but allow the use of a sanitized version of $servername to be
+  # used, using the new $use_servername_for_filenames parameter.
+  #
+  # This will default to false until the next major release (v6.0.0), at which point, we will default this to true and
+  # warn about it's imminent deprecation in the subsequent major release (v7.0.0)
+  #
+  # In v7.0.0, we will deprecate the $use_servername_for_filenames parameter altogether and use the sanitized value of
+  # $servername for default log / config filenames.
+  $filename = $use_servername_for_filenames ? {
+    true => regsubst($servername, ' ', '_', 'G'),
+    false => $name,
+  }
+
+  if ! $use_servername_for_filenames {
+    $use_servername_for_filenames_warn_msg = '
+    It is possible for the $name parameter to be defined with spaces in it. Although supported on POSIX systems, this
+    can lead to cumbersome file names. The $servername attribute has stricter conditions from Apache (i.e. no spaces)
+    When $use_servername_for_filenames = true, the $servername parameter, sanitized, is used to construct log and config
+    file names.
+
+    From version v6.0.0 of the puppetlabs-apache module, this parameter will default to true. From version v7.0.0 of the
+    module, the $use_servername_for_filenames will be removed and log/config file names will be dervied from the
+    sanitized $servername parameter when not explicitly defined.'
+    warning($use_servername_for_filenames_warn_msg)
+  }
 
   # This ensures that the docroot exists
   # But enables it to be specified across multiple vhost resources
